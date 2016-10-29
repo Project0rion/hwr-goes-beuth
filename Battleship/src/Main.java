@@ -4,7 +4,9 @@
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Battleship started");
-        System.out.println("Philipp war hier");
+
+        Controller gameController = new Controller();
+        Game game = gameController.createGame();
+        game.play();
     }
 }
