@@ -28,7 +28,7 @@ public class PlayFieldCoordinate {
         if (parsedColumn <= 0 || parsedRow <= 0)
             throw new IllegalArgumentException("column and row must be grater than zero");
         else
-            return new PlayFieldCoordinate(parsedColumn, parsedRow);
+            return new PlayFieldCoordinate(parsedColumn - 1, parsedRow - 1);
     }
 
     private static int parseChar(char input) {
