@@ -54,6 +54,11 @@ public class Game {
     }
 
     public void play() {
+        System.out.println("Das Spiel beginnt!");
+        System.out.println("Besiege Deinen Gegner mit moeglichst wenig Schuessen!");
+        System.out.println();
+        showReport();
+
         while (true) {
             PlayFieldCoordinate targetCoordinate = requestTargetCoordinate();
             shoot(targetCoordinate);
@@ -143,9 +148,9 @@ public class Game {
 
     private void showFinalReport() {
         int shotsFired = 0;
-        for (int rowIndex = 0; rowIndex < playField.length; rowIndex++) {
-            for (int columnIndex = 0; columnIndex < playField[0].length; columnIndex++) {
-                if (playField[rowIndex][columnIndex] != PLAY_FIELD_SYMBOL_UNKNOWN) {
+        for (int rowIndex = 0; rowIndex < userKnownPlayField.length; rowIndex++) {
+            for (int columnIndex = 0; columnIndex < userKnownPlayField[0].length; columnIndex++) {
+                if (userKnownPlayField[rowIndex][columnIndex] != PLAY_FIELD_SYMBOL_UNKNOWN) {
                     shotsFired ++;
                 }
             }
