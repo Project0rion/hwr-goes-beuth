@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Battleship/Battleship.iml" filepath="$PROJECT_DIR$/Battleship/Battleship.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CodeCreator/CodeCreator.iml" filepath="$PROJECT_DIR$/CodeCreator/CodeCreator.iml" />
       <module fileurl="file://$PROJECT_DIR$/hwr-goes-beuth.iml" filepath="$PROJECT_DIR$/hwr-goes-beuth.iml" />
     </modules>
   </component>
