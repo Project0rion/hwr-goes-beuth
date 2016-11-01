@@ -6,16 +6,22 @@ public class Controller {
     private int[][] createPlayField() {
         int w = PlayFieldSymbols.WATER;
         int s = PlayFieldSymbols.SHIP;
-        
-        return new int[][] {
-                { w, w, w, w, w, w, w },
-                { w, w, s, s, s, s, s },
-                { s, w, w, w, w, w, w },
-                { s, w, w, w, w, s, w },
-                { w, w, w, w, w, s, w },
-                { s, s, s, s, w, s, w },
-                { w, w, w, w, w, w, w }
-        };
+
+        try {
+
+            return PlayFieldGenerator.GeneratePlayField();
+
+        } catch (Exception e) {
+            return new int[][] {
+                    { w, w, w, w, w, w, w },
+                    { w, w, s, s, s, s, s },
+                    { s, w, w, w, w, w, w },
+                    { s, w, w, w, w, s, w },
+                    { w, w, w, w, w, s, w },
+                    { s, s, s, s, w, s, w },
+                    { w, w, w, w, w, w, w }
+            };
+        }
     }
 
     public Game createGame() {
