@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 
-public class BattleshipCodeGenerator {
+public class BattleshipPlayFieldGenerator {
 
     static BufferedReader br = null;
     static ArrayList<String> textFromFile = new ArrayList<>();
@@ -68,7 +68,7 @@ public class BattleshipCodeGenerator {
 
     public static void writeFile() {
         try {
-            Path file = Paths.get("BattleshipCodeGenerator\\generated\\PlayFieldGenerator.java");
+            Path file = Paths.get("BattleshipCodeGenerator\\gen\\PlayFieldGenerator.java");
             Files.write(file, textFromFile, Charset.forName("UTF-8"));
 
         } catch (IOException ioEx) {

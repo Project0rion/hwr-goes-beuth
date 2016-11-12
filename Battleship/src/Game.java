@@ -9,18 +9,19 @@ import java.util.stream.IntStream;
  */
 public class Game {
 
-    private static final int PLAY_FIELD_SYMBOL_UNKNOWN = -1;
-
     private int[][] cpuPlayField;
     private int[][] userKnownCpuPlayField;
     private int[][] userPlayField;
     private int[][] cpuKnownUserPlayField;
+
+    private Opponent opponent;
 
     public Game(int[][] cpuPlayField) {
         this.cpuPlayField = cpuPlayField;
         validatePlayField(cpuPlayField);
         userKnownCpuPlayField = createUnknownPlayField(cpuPlayField);
         cpuKnownUserPlayField = createUnknownPlayField(cpuPlayField);
+        opponent = new Opponent();
     }
 
     private void validatePlayField(int[][] playField) {
@@ -53,7 +54,7 @@ public class Game {
 
         for (int rowIndex = 0; rowIndex < unknownPlayField.length; rowIndex++) {
             for (int columnIndex = 0; columnIndex < unknownPlayField[0].length; columnIndex++) {
-                unknownPlayField[rowIndex][columnIndex] = PLAY_FIELD_SYMBOL_UNKNOWN;
+                unknownPlayField[rowIndex][columnIndex] = PlayFieldSymbols.UNKNOWN;
             }
         }
 
@@ -74,6 +75,19 @@ public class Game {
         while (true) {
             PlayFieldCoordinate targetCoordinate = requestTargetCoordinate();
             shoot(targetCoordinate);
+
+            if (isGameFinished()) {
+                showReport();
+                showFinalReport();
+                return;
+            }
+
+            PlayFieldCoordinate cpuTargetCoordinate = opponent.shoot(cpuKnownUserPlayField);
+            cpuKnownUserPlayField[cpuTargetCoordinate.getRow()][cpuTargetCoordinate.getColumn()] = userPlayField[cpuTargetCoordinate.getRow()][cpuTargetCoordinate.getColumn()];
+
+            boolean cpuShotShip = userPlayField[cpuTargetCoordinate.getRow()][cpuTargetCoordinate.getColumn()] == PlayFieldSymbols.SHIP;
+            System.out.println("Der Computer schiesst auf " + cpuTargetCoordinate + "... " + (cpuShotShip ? "Treffer!" : "Daneben!"));
+
             showReport();
 
             if (isGameFinished()) {
@@ -146,7 +160,7 @@ public class Game {
             System.out.println("Gib Deine Schusskoordinaten in Form <Spalte><Zeile> ein:");
             PlayFieldCoordinate inputCoordinate = requestCoordinate(cpuPlayField);
 
-            if (userKnownCpuPlayField[inputCoordinate.getRow()][inputCoordinate.getColumn()] != PLAY_FIELD_SYMBOL_UNKNOWN)
+            if (userKnownCpuPlayField[inputCoordinate.getRow()][inputCoordinate.getColumn()] != PlayFieldSymbols.UNKNOWN)
                 System.out.println("Dieses Feld wurde bereits beschossen");
             else
                 return inputCoordinate;
@@ -241,9 +255,25 @@ public class Game {
     }
 
     private boolean isGameFinished() {
+         return hasUserWon() || hasCpuWon();
+    }
+
+    private boolean hasUserWon() {
         for (int rowIndex = 0; rowIndex < cpuPlayField.length; rowIndex++) {
             for (int columnIndex = 0; columnIndex < cpuPlayField[0].length; columnIndex++) {
                 if (cpuPlayField[rowIndex][columnIndex] == PlayFieldSymbols.SHIP && userKnownCpuPlayField[rowIndex][columnIndex] != PlayFieldSymbols.SHIP) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean hasCpuWon() {
+        for (int rowIndex = 0; rowIndex < userPlayField.length; rowIndex++) {
+            for (int columnIndex = 0; columnIndex < userPlayField[0].length; columnIndex++) {
+                if (userPlayField[rowIndex][columnIndex] == PlayFieldSymbols.SHIP && cpuKnownUserPlayField[rowIndex][columnIndex] != PlayFieldSymbols.SHIP) {
                     return false;
                 }
             }
@@ -278,6 +308,7 @@ public class Game {
         String bigSpace = "      ";
         String smallSpace = "   ";
 
+        System.out.println();
         System.out.println("Gegnerisches Spielfeld" + bigSpace + smallSpace + "Eigenes Spielfeld");
         System.out.println();
 
@@ -313,21 +344,32 @@ public class Game {
     }
 
     private void showFinalReport() {
+
+        if (hasUserWon()) {
+            System.out.println("Du hast das Spiel nach Abgabe von " + countShotsFired(userKnownCpuPlayField) + " Schuessen gewonnen");
+        }
+        else if (hasCpuWon()) {
+            System.out.println("Der Computer hat das Spiel nach Abgabe von " + countShotsFired(cpuKnownUserPlayField) + " Schuessen gewonnen");
+        }
+    }
+
+    private int countShotsFired(int[][] playField) {
         int shotsFired = 0;
-        for (int rowIndex = 0; rowIndex < userKnownCpuPlayField.length; rowIndex++) {
-            for (int columnIndex = 0; columnIndex < userKnownCpuPlayField[0].length; columnIndex++) {
-                if (userKnownCpuPlayField[rowIndex][columnIndex] != PLAY_FIELD_SYMBOL_UNKNOWN) {
+
+        for (int rowIndex = 0; rowIndex < playField.length; rowIndex++) {
+            for (int columnIndex = 0; columnIndex < playField[0].length; columnIndex++) {
+                if (playField[rowIndex][columnIndex] != PlayFieldSymbols.UNKNOWN) {
                     shotsFired ++;
                 }
             }
         }
 
-        System.out.println("Du hast das Spiel nach Abgabe von " + shotsFired + " Schuessen gewonnen");
+        return shotsFired;
     }
 
     private Character getOutputSymbol(int playFieldSymbol) {
         HashMap<Integer, Character> outputSymbols = new HashMap<>();
-        outputSymbols.put(PLAY_FIELD_SYMBOL_UNKNOWN, '?');
+        outputSymbols.put(PlayFieldSymbols.UNKNOWN, '?');
         outputSymbols.put(PlayFieldSymbols.SHIP, 'X');
         outputSymbols.put(PlayFieldSymbols.WATER, '~');
 

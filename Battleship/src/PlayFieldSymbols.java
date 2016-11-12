@@ -3,6 +3,7 @@
  */
 public class PlayFieldSymbols {
 
+    public static final int UNKNOWN = -1;
     public static final int WATER = 0;
     public static final int SHIP = 1;
 }

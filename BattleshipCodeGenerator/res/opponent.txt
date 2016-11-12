@@ -1,0 +1,12 @@
+Shoot at A6.
+Shoot at b2.
+Shoot at C3.
+Shoot at D1.
+Shoot at E5.
+Shoot at A4.
+Shoot at A2.
+Shoot at B5.
+Shoot at C1.
+Shoot at D7.
+Shoot at E1.
+Shoot at F4.

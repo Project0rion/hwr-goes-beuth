@@ -1,0 +1,7 @@
+SHOOT=1
+COLUMN=2
+ROW=3
+PERIOD=4
+WHITESPACE=5
+'Shoot at'=1
+'.'=4

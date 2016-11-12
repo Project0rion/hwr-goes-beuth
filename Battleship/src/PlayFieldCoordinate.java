@@ -59,4 +59,9 @@ public class PlayFieldCoordinate {
 
         return column == ((PlayFieldCoordinate)obj).column && row == ((PlayFieldCoordinate)obj).row;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf((char)(column + 65)) + (row + 1);
+    }
 }
