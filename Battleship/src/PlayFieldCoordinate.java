@@ -51,4 +51,12 @@ public class PlayFieldCoordinate {
 
         return result;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof PlayFieldCoordinate))
+            return false;
+
+        return column == ((PlayFieldCoordinate)obj).column && row == ((PlayFieldCoordinate)obj).row;
+    }
 }
