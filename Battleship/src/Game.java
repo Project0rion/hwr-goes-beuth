@@ -19,7 +19,8 @@ public class Game {
     public Game(int[][] cpuPlayField) {
         this.cpuPlayField = cpuPlayField;
         validatePlayField(cpuPlayField);
-        initUserKnownPlayField(cpuPlayField);
+        userKnownCpuPlayField = createUnknownPlayField(cpuPlayField);
+        cpuKnownUserPlayField = createUnknownPlayField(cpuPlayField);
     }
 
     private void validatePlayField(int[][] playField) {
@@ -47,14 +48,16 @@ public class Game {
         }
     }
 
-    private void initUserKnownPlayField(int[][] playField) {
-        userKnownCpuPlayField = new int[playField.length][playField[0].length];
+    private int[][] createUnknownPlayField(int[][] sourcePlayField) {
+        int[][] unknownPlayField = new int[sourcePlayField.length][sourcePlayField[0].length];
 
-        for (int rowIndex = 0; rowIndex < userKnownCpuPlayField.length; rowIndex++) {
-            for (int columnIndex = 0; columnIndex < userKnownCpuPlayField[0].length; columnIndex++) {
-                userKnownCpuPlayField[rowIndex][columnIndex] = PLAY_FIELD_SYMBOL_UNKNOWN;
+        for (int rowIndex = 0; rowIndex < unknownPlayField.length; rowIndex++) {
+            for (int columnIndex = 0; columnIndex < unknownPlayField[0].length; columnIndex++) {
+                unknownPlayField[rowIndex][columnIndex] = PLAY_FIELD_SYMBOL_UNKNOWN;
             }
         }
+
+        return unknownPlayField;
     }
 
     public void play() {
@@ -62,6 +65,7 @@ public class Game {
         userPlayField = requestUserPlayField();
 
         System.out.println();
+        System.out.println("Alle Schiffe sind platziert.");
         System.out.println("Das Spiel beginnt!");
         System.out.println("Besiege Deinen Gegner mit moeglichst wenig Schuessen!");
         System.out.println();
@@ -271,7 +275,10 @@ public class Game {
     }
 
     private void showReport() {
-        System.out.println("Bekanntes Spielfeld:");
+        String bigSpace = "      ";
+        String smallSpace = "   ";
+
+        System.out.println("Gegnerisches Spielfeld" + bigSpace + smallSpace + "Eigenes Spielfeld");
         System.out.println();
 
         String columnHeader = "  ";
@@ -279,15 +286,27 @@ public class Game {
             columnHeader += (char)(i + 97) + " ";
         }
 
+        columnHeader += bigSpace + columnHeader + smallSpace + columnHeader;
+
         System.out.println(columnHeader.toUpperCase());
 
         for (int i = 0; i < userKnownCpuPlayField.length; i++) {
-            String row = "";
+            String row = (i + 1) + " ";
             for (int j = 0; j < userKnownCpuPlayField[i].length; j++) {
                 row += getOutputSymbol(userKnownCpuPlayField[i][j]) + " ";
             }
 
-            System.out.println(i+1 + " " + row);
+            row += bigSpace + (i + 1) + " ";
+            for (int j = 0; j < cpuKnownUserPlayField[i].length; j++) {
+                row += getOutputSymbol(cpuKnownUserPlayField[i][j]) + " ";
+            }
+
+            row += smallSpace + (i + 1) + " ";
+            for (int j = 0; j < userPlayField[i].length; j++) {
+                row += getOutputSymbol(userPlayField[i][j]) + " ";
+            }
+
+            System.out.println(row);
         }
 
         System.out.println();
