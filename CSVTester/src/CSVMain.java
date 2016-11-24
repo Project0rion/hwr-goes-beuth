@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Created by User on 15.11.2016.
  */
-public class Main extends CSVBaseListener {
+public class CSVMain extends CSVBaseListener {
     public static void main(String[] args) throws FileNotFoundException, IOException {
         // Get CSV lexer
         CSVLexer lexer = new CSVLexer(new ANTLRInputStream(new FileReader("CSVTester\\res\\CSV.csv")));
@@ -22,7 +22,7 @@ public class Main extends CSVBaseListener {
         CSVParser.FileContext fileContext = parser.file();
         // Walk it and attach our listener
         ParseTreeWalker walker = new ParseTreeWalker();
-        CSVBaseListener listener = new Main();
+        CSVBaseListener listener = new CSVMain();
         walker.walk(listener, fileContext);
     }
     public void exitFile(CSVParser.FileContext ctx) {

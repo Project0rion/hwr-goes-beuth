@@ -25,7 +25,10 @@ public class CodeBuilder {
     }
 
     public void addValue(String value) {
-        code.add(value + ",");
+        String lastString = code.get(code.size() -1);
+        lastString += value;
+        code.remove(code.size() -1);
+        code.add(lastString);
     }
 
     public void addEmptyLine() {

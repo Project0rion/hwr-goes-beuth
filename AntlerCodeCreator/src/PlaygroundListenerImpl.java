@@ -13,12 +13,24 @@ public class PlaygroundListenerImpl extends PlaygroundBaseListener {
     @Override
     public void enterValue(PlaygroundParser.ValueContext ctx) {
         System.out.println("parsed PlaygroundValue: " + ctx.getText());
-        cb.addValue(ctx.getText());
+        if(ctx.getText().equals("w")) {
+            cb.addValue("0,");
+        }
+        else if(ctx.getText().equals("s")) {
+            cb.addValue("1,");
+        }
+    }
+
+    @Override
+    public void exitRow(PlaygroundParser.RowContext ctx) {
+
+        cb.addValue("},");
     }
 
     @Override
     public void enterRow(PlaygroundParser.RowContext ctx) {
-        //TODO
+        cb.addEmptyLine();
+        cb.addValue("{");
     }
 
     @Override
@@ -40,13 +52,19 @@ public class PlaygroundListenerImpl extends PlaygroundBaseListener {
     private void initPlaygroundCode() {
         cb = new CodeBuilder();
         cb.addLine("class PlayFieldGenerator {");
+        cb.incrIndent();
         cb.addLine("public static int[][] GeneratePlayField() {");
+        cb.incrIndent();
         cb.addLine("return new int[][] {");
+        cb.incrIndent();
     }
 
     private void finishPLaygroundCode() {
+        cb.decrIndent();
         cb.addLine("};");
+        cb.decrIndent();
         cb.addLine("}");
+        cb.decrIndent();
         cb.addLine("}");
     }
 }

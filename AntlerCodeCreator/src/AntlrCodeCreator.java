@@ -15,7 +15,7 @@ import java.io.IOException;
 public class AntlrCodeCreator extends PlaygroundBaseListener {
 
     public static void main(String[] args) throws FileNotFoundException, IOException {
-        PlaygroundLexer lexer = new PlaygroundLexer(new ANTLRInputStream(new FileReader("AntlerCodeCreator\\res\\playground")));
+        PlaygroundLexer lexer = new PlaygroundLexer(new ANTLRInputStream(new FileReader("AntlerCodeCreator\\res\\playground.txt")));
 
         // Get a list of matched tokens
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -29,7 +29,7 @@ public class AntlrCodeCreator extends PlaygroundBaseListener {
         walker.walk(listener, fileContext);
 
         try {
-            FileUtils.writeFile("AntlerCodeCreator\\gen\\Playground.java", listener.getPlaygroundCodeAsList());
+            FileUtils.writeFile("AntlerCodeCreator\\gen\\PlayFieldGenerator.java", listener.getPlaygroundCodeAsList());
         } catch (IOException e) {
             e.printStackTrace();
         }
