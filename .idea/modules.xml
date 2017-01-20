@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/Battleship/Battleship.iml" filepath="$PROJECT_DIR$/Battleship/Battleship.iml" />
       <module fileurl="file://$PROJECT_DIR$/BattleshipCodeGenerator/BattleshipCodeGenerator.iml" filepath="$PROJECT_DIR$/BattleshipCodeGenerator/BattleshipCodeGenerator.iml" />
       <module fileurl="file://$PROJECT_DIR$/CSVTester/CSVTester.iml" filepath="$PROJECT_DIR$/CSVTester/CSVTester.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CarzCodeGenerator/CarzCodeGenerator.iml" filepath="$PROJECT_DIR$/CarzCodeGenerator/CarzCodeGenerator.iml" />
       <module fileurl="file://$PROJECT_DIR$/hwr-goes-beuth.iml" filepath="$PROJECT_DIR$/hwr-goes-beuth.iml" />
     </modules>
   </component>

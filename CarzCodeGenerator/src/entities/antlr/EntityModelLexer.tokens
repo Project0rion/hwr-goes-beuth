@@ -1,0 +1,10 @@
+NAME=1
+BEGIN=2
+END=3
+LIST=4
+ENDLINE=5
+WHITESPACE=6
+'{'=2
+'}'=3
+'[]'=4
+';'=5
