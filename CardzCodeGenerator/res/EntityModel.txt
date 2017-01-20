@@ -1,0 +1,24 @@
+Card {
+    String name;
+    int damage;
+    int health;
+    int cost;
+    Faction faction;
+}
+
+Field {
+    long leftCardId;
+    long centerLeftCardId;
+    long centerCardId;
+    long centerRightCardId;
+    long rightCardId;
+}
+
+Hand {
+    long[] cardIds;
+}
+
+Deck {
+    Faction faction;
+    long[] cardIds;
+}
