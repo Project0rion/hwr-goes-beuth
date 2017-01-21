@@ -57,6 +57,16 @@ public class EntityModelBuilder extends EntityModelBaseListener {
     }
 
     public EntityModel getEntityModel() {
+        setReferenceProperties(entityModel);
         return entityModel;
+    }
+
+    private void setReferenceProperties(EntityModel entityModel) {
+        for (Entity entity : entityModel.getEntities()) {
+            for (Property property : entity.getProperties()) {
+                if (entityModel.getEntities().stream().anyMatch(e -> e.getName().equals(property.getType())))
+                    property.setEntityReference(true);
+            }
+        }
     }
 }

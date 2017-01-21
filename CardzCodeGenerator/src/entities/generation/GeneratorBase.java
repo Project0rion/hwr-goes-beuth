@@ -1,8 +1,6 @@
 package entities.generation;
 
 import entities.model.Entity;
-import entities.model.EntityModel;
-import entities.model.Property;
 import utils.CodeBuilder;
 
 import java.util.Collection;
@@ -12,10 +10,23 @@ import java.util.Collection;
  */
 public abstract class GeneratorBase {
 
+    protected enum ClassType {
+        Class, Interface, Enum
+    }
+
     protected abstract String getEntityPackage();
     protected abstract String[] getEntityImports();
+    protected abstract ClassType getClassType();
 
-    public abstract String generateFileName(Entity entity);
+    protected String getSuperClass() {
+        return null;
+    }
+
+    protected String[] getImplementedInterfaces() {
+        return new String[0];
+    }
+
+    public abstract String generateClassName(Entity entity);
     protected abstract void generateClassContent(Entity entity, CodeBuilder cb);
 
     public final Collection<String> generate(Entity entity) {
@@ -29,7 +40,14 @@ public abstract class GeneratorBase {
         }
 
         cb.addEmptyLine();
-        cb.addLine("public class " + generateFileName(entity) + " extends Entity {");
+
+        String classDeclaration = "public " + getClassType().toString().toLowerCase() + " " + generateClassName(entity) + " ";
+        if (getSuperClass() != null && getSuperClass() != "")
+            classDeclaration += "extends " + getSuperClass() + " ";
+        if (getImplementedInterfaces().length > 0)
+            classDeclaration += "implements " + String.join(", ", getImplementedInterfaces()) + " ";
+        cb.addLine(classDeclaration + "{");
+
         cb.addEmptyLine();
         cb.incrIndent();
 

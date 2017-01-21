@@ -8,6 +8,7 @@ public class Property {
     private String type;
     private String name;
     private boolean isIterable;
+    private boolean isEntityReference;
 
     public String getType() {
         return type;
@@ -31,5 +32,13 @@ public class Property {
 
     public void setIterable(boolean iterable) {
         isIterable = iterable;
+    }
+
+    public boolean isEntityReference() {
+        return isEntityReference;
+    }
+
+    public void setEntityReference(boolean entityReference) {
+        isEntityReference = entityReference;
     }
 }

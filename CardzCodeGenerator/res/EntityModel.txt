@@ -7,18 +7,38 @@ Card {
 }
 
 Field {
-    long leftCardId;
-    long centerLeftCardId;
-    long centerCardId;
-    long centerRightCardId;
-    long rightCardId;
+    Card leftCard;
+    Card centerLeftCard;
+    Card centerCard;
+    Card centerRightCard;
+    Card rightCard;
 }
 
 Hand {
-    long[] cardIds;
+    Card[] cards;
 }
 
 Deck {
     Faction faction;
-    long[] cardIds;
+    Card[] cards;
+}
+
+Match {
+    MatchPhase matchPhase;
+    Player matchUser;
+    Player opponent;
+}
+
+Player {
+    String name;
+    Deck deck;
+    Hand hand;
+    Field field;
+}
+
+User {
+    Card[] collectedCards;
+    Match currentMatch;
+    Deck sharkDeck;
+    Deck raptorDeck;
 }

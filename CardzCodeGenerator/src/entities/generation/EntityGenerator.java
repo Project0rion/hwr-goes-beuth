@@ -4,6 +4,8 @@ import entities.model.Entity;
 import entities.model.Property;
 import utils.CodeBuilder;
 
+import java.util.stream.Collectors;
+
 /**
  * Created by Project0rion on 20.01.2017.
  */
@@ -26,40 +28,103 @@ public class EntityGenerator extends GeneratorBase {
     }
 
     @Override
-    public String generateFileName(Entity entity) {
+    protected ClassType getClassType() {
+        return ClassType.Class;
+    }
+
+    @Override
+    public String generateClassName(Entity entity) {
         return entity.getName();
+    }
+
+    @Override
+    protected String getSuperClass() {
+        return "Entity";
     }
 
     @Override
     protected void generateClassContent(Entity entity, CodeBuilder cb) {
         for (Property property : entity.getProperties()) {
-            cb.addLine("private " + property.getType() + " " + property.getName() + ";");
+                cb.addLine("private " + generatePropertyType(property) + " " + generatePropertyName(property) + ";");
         }
 
         cb.addEmptyLine();
 
+        if (entity.getProperties().stream().anyMatch(p -> p.isIterable())) {
+            generateConstructor(entity, cb);
+            cb.addEmptyLine();
+        }
+
         for (Property property : entity.getProperties()) {
             generateGetter(property, cb);
             cb.addEmptyLine();
-            generateSetter(property, cb);
-            cb.addEmptyLine();
+
+            if (!property.isIterable()) {
+                generateSetter(property, cb);
+                cb.addEmptyLine();
+            }
         }
     }
 
-    private void generateGetter(Property property, CodeBuilder cb) {
-        String formattedPropertyName = property.getName().substring(0, 1).toUpperCase() + property.getName().substring(1);
-        cb.addLine("public " + property.getType() + " get" + formattedPropertyName + "() {");
+    private String generatePropertyType(Property property) {
+        if (property.isEntityReference())
+            if (property.isIterable())
+                return "List<long>";
+            else
+                return "long";
+        else
+            if (property.isIterable())
+                return "List<" + property.getType() + ">";
+            else
+                return property.getType();
+    }
+
+    private String generatePropertyName(Property property) {
+        String currentName = property.getName();
+
+        if (property.isEntityReference())
+            if (property.isIterable())
+                if (currentName.toLowerCase().endsWith(property.getType().toLowerCase() + "s"))
+                    return currentName.substring(0, currentName.length() - 1) + "Ids";
+                else
+                    return currentName + "Ids";
+            else {
+                return currentName + "Id";
+            }
+        else
+            return currentName;
+    }
+
+    private void generateConstructor(Entity entity, CodeBuilder cb) {
+        cb.addLine("public " + entity.getName() + "() {");
         cb.incrIndent();
-        cb.addLine("return " + property.getName() + ";");
+
+        for (Property iterableProperty : entity.getProperties().stream().filter(p -> p.isIterable()).collect(Collectors.toList())) {
+            cb.addLine(generatePropertyName(iterableProperty) + " = new ArrayList<>();");
+        }
+
+        cb.decrIndent();
+        cb.addLine("}");
+    }
+
+    private void generateGetter(Property property, CodeBuilder cb) {
+        String generatedPropertyName = generatePropertyName(property);
+        String formattedPropertyName = generatedPropertyName.substring(0, 1).toUpperCase() + generatedPropertyName.substring(1);
+
+        cb.addLine("public " + generatePropertyType(property) + " get" + formattedPropertyName + "() {");
+        cb.incrIndent();
+        cb.addLine("return " + generatedPropertyName + ";");
         cb.decrIndent();
         cb.addLine("}");
     }
 
     private void generateSetter(Property property, CodeBuilder cb) {
-        String formattedPropertyName = property.getName().substring(0, 1).toUpperCase() + property.getName().substring(1);
-        cb.addLine("public void set" + formattedPropertyName + "(" + property.getType() + " " + property.getName() + ") {");
+        String generatedPropertyName = generatePropertyName(property);
+        String formattedPropertyName = generatedPropertyName.substring(0, 1).toUpperCase() + generatedPropertyName.substring(1);
+
+        cb.addLine("public void set" + formattedPropertyName + "(" + generatePropertyType(property) + " " + generatedPropertyName + ") {");
         cb.incrIndent();
-        cb.addLine("this." + property.getName() + " = " + property.getName() + ";");
+        cb.addLine("this." + generatedPropertyName + " = " + generatedPropertyName + ";");
         cb.decrIndent();
         cb.addLine("}");
     }
