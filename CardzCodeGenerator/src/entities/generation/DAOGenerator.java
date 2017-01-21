@@ -3,7 +3,9 @@ package entities.generation;
 import entities.model.Entity;
 import entities.model.Property;
 import utils.CodeBuilder;
+import utils.StringUtils;
 
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
@@ -17,8 +19,14 @@ public class DAOGenerator extends GeneratorBase {
     }
 
     @Override
-    protected String[] getEntityImports() {
-        return new String[0];
+    protected String[] getEntityImports(Entity entity) {
+        String entityPackage = "com.hwr_goes_beuth.cardz.entities";
+
+        Collection<Property> refProperties = entity.getProperties().stream().filter(p -> p.isEntityReference()).collect(Collectors.toList());
+        Collection<String> refPropertyTypes = refProperties.stream().map(p -> entityPackage + "." + p.getType()).distinct().collect(Collectors.toList());
+        refPropertyTypes.add(entityPackage + "." + entity.getName());
+
+        return refPropertyTypes.toArray(new String[0]);
     }
 
     @Override
@@ -44,16 +52,16 @@ public class DAOGenerator extends GeneratorBase {
     private void generateDAOMethods(Entity entity, CodeBuilder cb) {
         cb.addLine(entity.getName() + " get" + entity.getName() + "(long id);");
         cb.addLine(entity.getName() + " create" + entity.getName() + "();");
-        cb.addLine("void update" + entity.getName() + "(" + entity.getName() + " " + entity.getName().toLowerCase() + ");");
+        cb.addLine("void update" + entity.getName() + "(" + entity.getName() + " " + StringUtils.ensureStartLower(entity.getName()) + ");");
         cb.addLine("void delete" + entity.getName() + "(long id);");
     }
 
     private void generateReferenceMethods(Entity entity, CodeBuilder cb) {
         for (Property refProperty : entity.getProperties().stream().filter(p -> p.isEntityReference()).collect(Collectors.toList())) {
             String returnType = refProperty.isIterable() ? "List<" + refProperty.getType() + ">" : refProperty.getType();
-            String methodName = "get" + refProperty.getName().substring(0, 1).toUpperCase() + refProperty.getName().substring(1);
+            String methodName = "get" + StringUtils.ensureStartUpper(refProperty.getName());
 
-            cb.addLine(returnType + " " + methodName + "(" + entity.getName() + " " + entity.getName().substring(0, 1).toLowerCase() + entity.getName().substring(1) + ");");
+            cb.addLine(returnType + " " + methodName + "(" + entity.getName() + " " + StringUtils.ensureStartLower(entity.getName()) + ");");
         }
     }
 }

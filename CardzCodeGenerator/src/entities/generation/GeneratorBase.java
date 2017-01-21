@@ -15,14 +15,14 @@ public abstract class GeneratorBase {
     }
 
     protected abstract String getEntityPackage();
-    protected abstract String[] getEntityImports();
+    protected abstract String[] getEntityImports(Entity entity);
     protected abstract ClassType getClassType();
 
     protected String getSuperClass() {
         return null;
     }
 
-    protected String[] getImplementedInterfaces() {
+    protected String[] getImplementedInterfaces(Entity entity) {
         return new String[0];
     }
 
@@ -35,7 +35,7 @@ public abstract class GeneratorBase {
         cb.addLine("package " + getEntityPackage() + ";");
         cb.addEmptyLine();
 
-        for (String importStatement : getEntityImports()) {
+        for (String importStatement : getEntityImports(entity)) {
             cb.addLine("import " + importStatement + ";");
         }
 
@@ -44,8 +44,8 @@ public abstract class GeneratorBase {
         String classDeclaration = "public " + getClassType().toString().toLowerCase() + " " + generateClassName(entity) + " ";
         if (getSuperClass() != null && getSuperClass() != "")
             classDeclaration += "extends " + getSuperClass() + " ";
-        if (getImplementedInterfaces().length > 0)
-            classDeclaration += "implements " + String.join(", ", getImplementedInterfaces()) + " ";
+        if (getImplementedInterfaces(entity).length > 0)
+            classDeclaration += "implements " + String.join(", ", getImplementedInterfaces(entity)) + " ";
         cb.addLine(classDeclaration + "{");
 
         cb.addEmptyLine();

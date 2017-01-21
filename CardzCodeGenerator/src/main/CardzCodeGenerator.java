@@ -6,6 +6,7 @@ import entities.EntityModelBuilder;
 import entities.generation.DAOGenerator;
 import entities.generation.EntityGenerator;
 import entities.generation.GeneratorBase;
+import entities.generation.SharedPrefsDAOGenerator;
 import entities.model.Entity;
 import entities.model.EntityModel;
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -22,11 +23,16 @@ public class CardzCodeGenerator {
 
     public static void main(String[] args) {
         runEntityModelGeneration();
+        runCardRepositoryGeneration();
     }
 
     private static void runEntityModelGeneration() {
         EntityModel parsedEntityModel = parseEntityModel("CardzCodeGenerator\\res\\EntityModel.txt");
         writeEntityModelToFile(parsedEntityModel);
+    }
+
+    private static void runCardRepositoryGeneration() {
+        // TODO: implement generation of CardRepository, DeckRepository and OpponentRepository here
     }
 
     private static EntityModel parseEntityModel(String sourceFilePath) {
@@ -38,17 +44,9 @@ public class CardzCodeGenerator {
         }
 
         EntityModelLexer lexer = new EntityModelLexer(new ANTLRInputStream(entityModelSource));
-
-        // Get a list of matched tokens
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-
-        // Pass the tokens to the parser
         EntityModelParser parser = new EntityModelParser(tokens);
-
-        // Specify our entry point
         EntityModelParser.EntitiesContext entityModelContext = parser.entities();
-
-        // Walk it and attach our listener
         ParseTreeWalker walker = new ParseTreeWalker();
         EntityModelBuilder listener = new EntityModelBuilder();
         walker.walk(listener, entityModelContext);
@@ -58,7 +56,7 @@ public class CardzCodeGenerator {
 
     private static void writeEntityModelToFile(EntityModel entityModel) {
 
-        GeneratorBase[] generators = { new EntityGenerator(), new DAOGenerator()};
+        GeneratorBase[] generators = { new EntityGenerator(), new DAOGenerator(), new SharedPrefsDAOGenerator()};
 
         try {
             for (GeneratorBase generator : generators) {

@@ -32,6 +32,9 @@ public class Entity {
     }
 
     public void setName(String name) {
+        if (name.substring(0, 1).equals(name.substring(0, 1).toLowerCase()))
+            System.out.println("#WARNING: entity name should start with upper case character: " + name);
+
         this.name = name;
     }
 }

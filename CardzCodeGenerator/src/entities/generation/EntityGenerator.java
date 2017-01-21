@@ -3,6 +3,7 @@ package entities.generation;
 import entities.model.Entity;
 import entities.model.Property;
 import utils.CodeBuilder;
+import utils.StringUtils;
 
 import java.util.stream.Collectors;
 
@@ -17,7 +18,7 @@ public class EntityGenerator extends GeneratorBase {
     }
 
     @Override
-    protected String[] getEntityImports() {
+    protected String[] getEntityImports(Entity entity) {
         return new String[]
                 {
                         "java.util.List",
@@ -109,7 +110,7 @@ public class EntityGenerator extends GeneratorBase {
 
     private void generateGetter(Property property, CodeBuilder cb) {
         String generatedPropertyName = generatePropertyName(property);
-        String formattedPropertyName = generatedPropertyName.substring(0, 1).toUpperCase() + generatedPropertyName.substring(1);
+        String formattedPropertyName = StringUtils.ensureStartUpper(generatedPropertyName);
 
         cb.addLine("public " + generatePropertyType(property) + " get" + formattedPropertyName + "() {");
         cb.incrIndent();
@@ -120,7 +121,7 @@ public class EntityGenerator extends GeneratorBase {
 
     private void generateSetter(Property property, CodeBuilder cb) {
         String generatedPropertyName = generatePropertyName(property);
-        String formattedPropertyName = generatedPropertyName.substring(0, 1).toUpperCase() + generatedPropertyName.substring(1);
+        String formattedPropertyName = StringUtils.ensureStartUpper(generatedPropertyName);
 
         cb.addLine("public void set" + formattedPropertyName + "(" + generatePropertyType(property) + " " + generatedPropertyName + ") {");
         cb.incrIndent();
