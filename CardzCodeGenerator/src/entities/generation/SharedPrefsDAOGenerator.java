@@ -33,6 +33,11 @@ public class SharedPrefsDAOGenerator extends GeneratorBase {
                 refPropertyTypes.stream().map(propType -> daoPackage + "." + propType + "DAO")
         ).collect(Collectors.toList());
 
+        imports.add("com.hwr_goes_beuth.cardz.entities.enums.Faction");
+        imports.add("com.hwr_goes_beuth.cardz.entities.enums.MatchPhase");
+        imports.add("java.util.List");
+        imports.add("java.util.ArrayList");
+
         return imports.toArray(new String[0]);
     }
 
@@ -69,6 +74,11 @@ public class SharedPrefsDAOGenerator extends GeneratorBase {
         generateUpdate(entity, cb);
         cb.addEmptyLine();
         generateDelete(entity, cb);
+
+        if (getRequiredDAOs(entity).size() > 0) {
+            cb.addEmptyLine();
+            generateReferenceGetters(entity, cb);
+        }
     }
 
     private void generateConstructor(Entity entity, CodeBuilder cb) {
@@ -143,11 +153,12 @@ public class SharedPrefsDAOGenerator extends GeneratorBase {
 
         for (Property property : refProperties) {
             String dao = StringUtils.ensureStartLower(property.getType()) + "DAO";
+            String propertyName = StringUtils.ensureStartUpper(EntityGenerator.generatePropertyName(property));
 
             if (property.isIterable()) {
                 String loopVariable = StringUtils.ensureStartLower(property.getType()) + "Id";
 
-                cb.addLine("for (long " + loopVariable + " : " + retrievedEntityName + ".get" + StringUtils.ensureStartUpper(property.getName()) + "Ids()) {");
+                cb.addLine("for (long " + loopVariable + " : " + retrievedEntityName + ".get" + propertyName + "()) {");
                 cb.incrIndent();
                 cb.addLine(dao + ".delete" + property.getType() + "(" + loopVariable + ");");
                 cb.decrIndent();
@@ -160,6 +171,53 @@ public class SharedPrefsDAOGenerator extends GeneratorBase {
 
         cb.addEmptyLine();
         cb.addLine("context.deleteFromPrefs(" + retrievedEntityName + ");");
+        cb.decrIndent();
+        cb.addLine("}");
+    }
+
+    private void generateReferenceGetters(Entity entity, CodeBuilder cb) {
+        for (Property refProperty : entity.getProperties().stream().filter(p -> p.isEntityReference()).collect(Collectors.toList())) {
+            if (refProperty.isIterable())
+                generateIterableReferenceGetter(refProperty, entity, cb);
+            else
+                generateSimpleReferenceGetter(refProperty, entity, cb);
+
+            cb.addEmptyLine();
+        }
+    }
+
+    private void generateSimpleReferenceGetter(Property refProperty, Entity entity, CodeBuilder cb) {
+        String methodName = "get" + StringUtils.ensureStartUpper(refProperty.getName());
+
+        cb.addLine("@Override");
+        cb.addLine("public " + refProperty.getType() + " " + methodName + "(" + entity.getName() + " " + StringUtils.ensureStartLower(entity.getName()) + ") {");
+        cb.incrIndent();
+        cb.addLine("return " + StringUtils.ensureStartLower(refProperty.getType()) + "DAO.get" + refProperty.getType()
+                + "(" + StringUtils.ensureStartLower(entity.getName()) + "."  + methodName + "Id());");
+        cb.decrIndent();
+        cb.addLine("}");
+    }
+
+    private void generateIterableReferenceGetter(Property refProperty, Entity entity, CodeBuilder cb) {
+        String methodName = "get" + StringUtils.ensureStartUpper(refProperty.getName());
+        String collectionName = refProperty.getName().endsWith("s") ? refProperty.getName() : refProperty.getName() + "s";
+        String loopVariable = StringUtils.ensureStartLower(refProperty.getType()) + "Id";
+        String propertyName = StringUtils.ensureStartUpper(EntityGenerator.generatePropertyName(refProperty));
+
+        cb.addLine("@Override");
+        cb.addLine("public List<" + refProperty.getType() + "> " + methodName + "(" + entity.getName() + " " + StringUtils.ensureStartLower(entity.getName()) + ") {");
+        cb.incrIndent();
+        cb.addLine("List<" + refProperty.getType() + "> " + collectionName + " = new ArrayList<>();");
+        cb.addEmptyLine();
+        cb.addLine("for (long " + loopVariable + " : " + StringUtils.ensureStartLower(entity.getName()) + ".get" + propertyName + "()) {");
+        cb.incrIndent();
+        cb.addLine(refProperty.getType() + " " + StringUtils.ensureStartLower(refProperty.getType()) + " = " + StringUtils.ensureStartLower(refProperty.getType()) + "DAO.get"
+                + refProperty.getType() + "(" + loopVariable + ");");
+        cb.addLine(collectionName + ".add(" + StringUtils.ensureStartLower(refProperty.getType()) + ");");
+        cb.decrIndent();
+        cb.addLine("}");
+        cb.addEmptyLine();
+        cb.addLine("return " + collectionName + ";");
         cb.decrIndent();
         cb.addLine("}");
     }

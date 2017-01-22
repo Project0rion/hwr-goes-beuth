@@ -80,7 +80,7 @@ public class EntityGenerator extends GeneratorBase {
                 return property.getType();
     }
 
-    private String generatePropertyName(Property property) {
+    public static String generatePropertyName(Property property) {
         String currentName = property.getName();
 
         if (property.isEntityReference())
