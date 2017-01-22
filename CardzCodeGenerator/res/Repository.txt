@@ -1,0 +1,89 @@
+Card Tigerhai{
+	faction:Shark;
+	health:30;
+	damage:100;
+	cost:2;
+}
+
+Card Sandhai{
+	faction:Shark;
+	health:40;
+	damage:80;
+	cost:1;
+}
+
+Card Hammerhai{
+	faction:Shark;
+	health:50;
+	damage:100;
+	cost:4;
+}
+
+Card Grossraptor{
+	faction:Raptor;
+	health:60;
+	damage:120;
+	cost:4;
+}
+
+Card Assassinator{
+	faction:Raptor;
+	health:30;
+	damage:60;
+	cost:2;
+}
+
+Card Killerraptor{
+	faction:Raptor;
+	health:50;
+	damage:100;
+	cost:5;
+}		
+
+Opponent Detlef{
+	faction:Raptor;
+	behavior:aggressive;
+	Cards{
+		Killerraptor,
+		Killerraptor,
+		Killerraptor,
+		Grossraptor,
+		Grossraptor,
+	}
+}
+
+Opponent Karl{
+	faction:Shark;
+	behavior:passive;
+	Cards{
+		Hammerhai,
+		Hammerhai,
+		Hammerhai,
+		Hammerhai,
+		Tigerhai,
+	}
+}
+
+Opponent Detlef{
+	faction:Raptor;
+	behavior:passive;
+	Cards{
+		Assassinator,
+		Assassinator,
+		Assassinator,
+		Assassinator,
+		Grossraptor,
+	}
+}
+
+Opponent Karl{
+	faction:Shark;
+	behavior:aggressive;
+	Cards{
+		Hammerhai,
+		Hammerhai,
+		Tigerhai,
+		Tigerhai,
+		Tigerhai,
+	}
+}

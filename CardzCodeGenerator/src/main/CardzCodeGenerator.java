@@ -1,5 +1,14 @@
 package main;
 
+import repositories.RepositoryBuilder;
+import repositories.antlr.RepositoryLexer;
+import repositories.antlr.RepositoryParser;
+import repositories.generation.CardRepositoryGenerator;
+import repositories.generation.DeckRepositoryGenerator;
+import repositories.generation.OpponentRepositoryGenerator;
+import repositories.model.CardRepository;
+import repositories.model.DeckRepository;
+import repositories.model.OpponentRepository;
 import entities.antlr.EntityModelLexer;
 import entities.antlr.EntityModelParser;
 import entities.EntityModelBuilder;
@@ -12,6 +21,7 @@ import entities.model.EntityModel;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import repositories.model.RepositoryModel;
 import utils.FileUtils;
 
 import java.io.IOException;
@@ -22,7 +32,7 @@ import java.io.IOException;
 public class CardzCodeGenerator {
 
     public static void main(String[] args) {
-        runEntityModelGeneration();
+        //runEntityModelGeneration();
         runCardRepositoryGeneration();
     }
 
@@ -32,7 +42,52 @@ public class CardzCodeGenerator {
     }
 
     private static void runCardRepositoryGeneration() {
-        // TODO: implement generation of CardRepository, DeckRepository and OpponentRepository here
+        RepositoryModel parsedRepo = parseRepository("CardzCodeGenerator\\res\\Repository.txt");
+        writeRepositoryToFile(parsedRepo);
+}
+
+    private static RepositoryModel parseRepository(String sourceFilePath) {
+        String cardRepositorySource = null;
+        try {
+            cardRepositorySource = FileUtils.readFile(sourceFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        RepositoryLexer lexer = new RepositoryLexer(new ANTLRInputStream(cardRepositorySource));
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        RepositoryParser parser = new RepositoryParser(tokens);
+        RepositoryParser.FileContext fileContext = parser.file();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        RepositoryBuilder listener = new RepositoryBuilder();
+        walker.walk(listener, fileContext);
+
+        return listener.getRepoModel();
+    }
+
+    private static void writeRepositoryToFile(RepositoryModel repoModel) {
+
+        CardRepositoryGenerator cardGgenerators = new CardRepositoryGenerator();
+                //, new DeckRepositoryGenerator(), new OpponentRepositoryGenerator()};
+
+        CardRepository cardRepo = repoModel.get_cardRepo();
+        DeckRepository deckRepo = repoModel.get_deckRepo();
+        OpponentRepository opponentRepo = repoModel.get_opponentRepo();
+
+        try {
+            String cardFileName = "CardzCodeGenerator\\gen\\Repositories\\CardRepository.java";
+            FileUtils.writeFile(cardFileName, cardGgenerators.generate(cardRepo));
+
+            String deckFileName = "CardzCodeGenerator\\gen\\Repositories\\DeckRepository.java";
+
+            //FileUtils.writeFile(deckFileName, generators[1].generate(deckRepo));
+
+            String opponentFileName = "CardzCodeGenerator\\gen\\Repositories\\OpponentRepository.java";
+
+            //FileUtils.writeFile(opponentFileName, generators[2].generate(opponentRepo));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static EntityModel parseEntityModel(String sourceFilePath) {
