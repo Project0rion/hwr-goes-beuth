@@ -18,6 +18,10 @@ public class DeckRepository {
         _decks.add(deck);
     }
 
+    public String getName() {
+        return "DeckRepository";
+    }
+
     public List<Deck> get_decks() {
         return _decks;
     }

@@ -21,4 +21,8 @@ public class OpponentRepository {
     public List<Opponent> get_opponents() {
         return _opponents;
     }
+
+    public String getName() {
+        return "OpponentRepository";
+    }
 }

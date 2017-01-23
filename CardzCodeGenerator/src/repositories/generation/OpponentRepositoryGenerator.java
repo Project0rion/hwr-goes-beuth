@@ -1,132 +1,93 @@
 package repositories.generation;
 
-import entities.generation.GeneratorBase;
-import entities.model.Entity;
-import entities.model.Property;
+import repositories.model.Card;
+import repositories.model.CardRepository;
+import repositories.model.Opponent;
+import repositories.model.OpponentRepository;
 import utils.CodeBuilder;
-import utils.StringUtils;
 
-import java.util.stream.Collectors;
+import java.util.Collection;
 
 /**
  * Created by Project0rion on 20.01.2017.
  */
-public class OpponentRepositoryGenerator extends GeneratorBase {
+public class OpponentRepositoryGenerator {
 
-    @Override
-    protected String getEntityPackage() {
-        return "com.hwr_goes_beuth.cardz.entities";
+    protected enum ClassType {
+        Class, Interface, Enum
     }
 
-    @Override
-    protected String[] getEntityImports(Entity entity) {
-        return new String[]
-                {
-                        "java.util.List",
-                        "java.util.ArrayList",
-                        "com.hwr_goes_beuth.cardz.entities.enums.Faction",
-                        "com.hwr_goes_beuth.cardz.entities.enums.MatchPhase"
-                };
-    }
+    public final Collection<String> generate(OpponentRepository repo) {
+        CodeBuilder cb = new CodeBuilder();
 
-    @Override
-    protected ClassType getClassType() {
-        return ClassType.Class;
-    }
+        cb.addLine("package " + getOpponentsPackage() + ";");
+        cb.addEmptyLine();
 
-    @Override
-    public String generateClassName(Entity entity) {
-        return entity.getName();
-    }
-
-    @Override
-    protected String getSuperClass() {
-        return "Entity";
-    }
-
-    @Override
-    protected void generateClassContent(Entity entity, CodeBuilder cb) {
-        for (Property property : entity.getProperties()) {
-                cb.addLine("private " + generatePropertyType(property) + " " + generatePropertyName(property) + ";");
+        for (String importStatement : getRepoImports(repo)) {
+            cb.addLine("import " + importStatement + ";");
         }
 
         cb.addEmptyLine();
 
-        if (entity.getProperties().stream().anyMatch(p -> p.isIterable())) {
-            generateConstructor(entity, cb);
-            cb.addEmptyLine();
-        }
+        String classDeclaration = "public " + getClassType().toString().toLowerCase() + " " + generateClassName(repo) + " ";
+        cb.addLine(classDeclaration + "{");
 
-        for (Property property : entity.getProperties()) {
-            generateGetter(property, cb);
-            cb.addEmptyLine();
-
-            if (!property.isIterable()) {
-                generateSetter(property, cb);
-                cb.addEmptyLine();
-            }
-        }
-    }
-
-    private String generatePropertyType(Property property) {
-        if (property.isEntityReference())
-            if (property.isIterable())
-                return "List<long>";
-            else
-                return "long";
-        else
-            if (property.isIterable())
-                return "List<" + property.getType() + ">";
-            else
-                return property.getType();
-    }
-
-    private String generatePropertyName(Property property) {
-        String currentName = property.getName();
-
-        if (property.isEntityReference())
-            if (property.isIterable())
-                if (currentName.toLowerCase().endsWith(property.getType().toLowerCase() + "s"))
-                    return currentName.substring(0, currentName.length() - 1) + "Ids";
-                else
-                    return currentName + "Ids";
-            else {
-                return currentName + "Id";
-            }
-        else
-            return currentName;
-    }
-
-    private void generateConstructor(Entity entity, CodeBuilder cb) {
-        cb.addLine("public " + entity.getName() + "() {");
+        cb.addEmptyLine();
         cb.incrIndent();
 
-        for (Property iterableProperty : entity.getProperties().stream().filter(p -> p.isIterable()).collect(Collectors.toList())) {
-            cb.addLine(generatePropertyName(iterableProperty) + " = new ArrayList<>();");
-        }
+        generateClassContent(repo, cb);
 
         cb.decrIndent();
         cb.addLine("}");
+
+        return cb.getCodeLines();
     }
 
-    private void generateGetter(Property property, CodeBuilder cb) {
-        String generatedPropertyName = generatePropertyName(property);
-        String formattedPropertyName = StringUtils.ensureStartUpper(generatedPropertyName);
-
-        cb.addLine("public " + generatePropertyType(property) + " get" + formattedPropertyName + "() {");
-        cb.incrIndent();
-        cb.addLine("return " + generatedPropertyName + ";");
-        cb.decrIndent();
-        cb.addLine("}");
+    private String getOpponentsPackage() {
+        return "com.hwr_goes_beuth.cardz.game.opponents";
     }
 
-    private void generateSetter(Property property, CodeBuilder cb) {
-        String generatedPropertyName = generatePropertyName(property);
-        String formattedPropertyName = StringUtils.ensureStartUpper(generatedPropertyName);
+    private String[] getRepoImports(OpponentRepository repo) {
+        return new String[]
+                {
+                        "com.hwr_goes_beuth.cardz.entities.enums.Faction",
+                        "com.hwr_goes_beuth.cardz.game.opponents.behaviors.AggressiveOpponentBehavior",
+                        "com.hwr_goes_beuth.cardz.game.opponents.behaviors.PassiveOpponentBehavior",
+                        "java.util.ArrayList",
+                        "java.util.List"
+                };
+    }
 
-        cb.addLine("public void set" + formattedPropertyName + "(" + generatePropertyType(property) + " " + generatedPropertyName + ") {");
+    private ClassType getClassType() {
+        return ClassType.Class;
+    }
+
+    private String generateClassName(OpponentRepository repo) {
+        return repo.getName();   }
+
+    private void generateClassContent(OpponentRepository repo, CodeBuilder cb) {
+
+        cb.addEmptyLine();
+
+        generateConstructor(repo, cb);
+        cb.addEmptyLine();
+    }
+
+    private void generateConstructor(OpponentRepository repo, CodeBuilder cb) {
+        cb.addLine("public " + repo.getName() + "() {");
         cb.incrIndent();
-        cb.addLine("this." + generatedPropertyName + " = " + generatedPropertyName + ";");
+        cb.addLine("List<Opponent> knownOpponents = new ArrayList<>();");
+
+        for (Opponent opp : repo.get_opponents()) {
+
+            if(opp.get_name().equals("shark") | opp.get_name().equals("raptor"))
+                continue;
+
+            String behavior = ((opp.get_behavior().equals("passive")) ? "Passive" : "Aggressive");
+
+            cb.addLine("knownOpponents.add(new Opponent(\""+ opp.get_name() +"\", Faction." + opp.get_faction() + ", new " + behavior +"OpponentBehavior()));");
+        }
+
         cb.decrIndent();
         cb.addLine("}");
     }

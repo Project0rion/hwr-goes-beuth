@@ -38,7 +38,31 @@ Card Killerraptor{
 	health:50;
 	damage:100;
 	cost:5;
-}		
+}
+
+Opponent shark{
+	faction:Shark;
+	behavior:aggressive;
+	Cards{
+		Sandhai,
+		Sandhai,
+		Hammerhai,
+		Tigerhai,
+		Tigerhai,
+	}
+}
+
+Opponent raptor{
+	faction:Raptor;
+	behavior:passive;
+	Cards{
+		Assassinator,
+		Assassinator,
+		Grossraptor,
+		Killerraptor,
+		Killerraptor,
+	}
+}
 
 Opponent Detlef{
 	faction:Raptor;
@@ -64,7 +88,7 @@ Opponent Karl{
 	}
 }
 
-Opponent Detlef{
+Opponent Klaus{
 	faction:Raptor;
 	behavior:passive;
 	Cards{
@@ -76,7 +100,7 @@ Opponent Detlef{
 	}
 }
 
-Opponent Karl{
+Opponent Carsten{
 	faction:Shark;
 	behavior:aggressive;
 	Cards{

@@ -32,7 +32,7 @@ import java.io.IOException;
 public class CardzCodeGenerator {
 
     public static void main(String[] args) {
-        //runEntityModelGeneration();
+        runEntityModelGeneration();
         runCardRepositoryGeneration();
     }
 
@@ -67,8 +67,9 @@ public class CardzCodeGenerator {
 
     private static void writeRepositoryToFile(RepositoryModel repoModel) {
 
-        CardRepositoryGenerator cardGgenerators = new CardRepositoryGenerator();
-                //, new DeckRepositoryGenerator(), new OpponentRepositoryGenerator()};
+        CardRepositoryGenerator cardGgenerator = new CardRepositoryGenerator();
+        DeckRepositoryGenerator deckGenerator = new DeckRepositoryGenerator();
+        OpponentRepositoryGenerator opponentGenerator = new OpponentRepositoryGenerator();
 
         CardRepository cardRepo = repoModel.get_cardRepo();
         DeckRepository deckRepo = repoModel.get_deckRepo();
@@ -76,15 +77,13 @@ public class CardzCodeGenerator {
 
         try {
             String cardFileName = "CardzCodeGenerator\\gen\\Repositories\\CardRepository.java";
-            FileUtils.writeFile(cardFileName, cardGgenerators.generate(cardRepo));
+            FileUtils.writeFile(cardFileName, cardGgenerator.generate(cardRepo));
 
             String deckFileName = "CardzCodeGenerator\\gen\\Repositories\\DeckRepository.java";
-
-            //FileUtils.writeFile(deckFileName, generators[1].generate(deckRepo));
+            FileUtils.writeFile(deckFileName, deckGenerator.generate(deckRepo, opponentRepo));
 
             String opponentFileName = "CardzCodeGenerator\\gen\\Repositories\\OpponentRepository.java";
-
-            //FileUtils.writeFile(opponentFileName, generators[2].generate(opponentRepo));
+            FileUtils.writeFile(opponentFileName, opponentGenerator.generate(opponentRepo));
         } catch (IOException e) {
             e.printStackTrace();
         }
