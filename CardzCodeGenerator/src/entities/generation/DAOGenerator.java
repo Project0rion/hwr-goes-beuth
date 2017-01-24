@@ -26,6 +26,8 @@ public class DAOGenerator extends GeneratorBase {
         Collection<String> refPropertyTypes = refProperties.stream().map(p -> entityPackage + "." + p.getType()).distinct().collect(Collectors.toList());
         refPropertyTypes.add(entityPackage + "." + entity.getName());
 
+        refPropertyTypes.add("java.util.List");
+
         return refPropertyTypes.toArray(new String[0]);
     }
 

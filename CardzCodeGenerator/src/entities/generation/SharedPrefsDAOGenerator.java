@@ -153,7 +153,7 @@ public class SharedPrefsDAOGenerator extends GeneratorBase {
 
         for (Property property : refProperties) {
             String dao = StringUtils.ensureStartLower(property.getType()) + "DAO";
-            String propertyName = StringUtils.ensureStartUpper(EntityGenerator.generatePropertyName(property));
+            String propertyName = StringUtils.ensureStartUpper(GenerationUtils.generatePropertyName(property));
 
             if (property.isIterable()) {
                 String loopVariable = StringUtils.ensureStartLower(property.getType()) + "Id";
@@ -202,7 +202,7 @@ public class SharedPrefsDAOGenerator extends GeneratorBase {
         String methodName = "get" + StringUtils.ensureStartUpper(refProperty.getName());
         String collectionName = refProperty.getName().endsWith("s") ? refProperty.getName() : refProperty.getName() + "s";
         String loopVariable = StringUtils.ensureStartLower(refProperty.getType()) + "Id";
-        String propertyName = StringUtils.ensureStartUpper(EntityGenerator.generatePropertyName(refProperty));
+        String propertyName = StringUtils.ensureStartUpper(GenerationUtils.generatePropertyName(refProperty));
 
         cb.addLine("@Override");
         cb.addLine("public List<" + refProperty.getType() + "> " + methodName + "(" + entity.getName() + " " + StringUtils.ensureStartLower(entity.getName()) + ") {");

@@ -31,6 +31,8 @@ Match {
 
 Player {
     String name;
+    int health;
+    int money;
     Deck deck;
     Hand hand;
     Field field;

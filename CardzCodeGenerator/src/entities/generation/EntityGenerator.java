@@ -46,7 +46,7 @@ public class EntityGenerator extends GeneratorBase {
     @Override
     protected void generateClassContent(Entity entity, CodeBuilder cb) {
         for (Property property : entity.getProperties()) {
-                cb.addLine("private " + generatePropertyType(property) + " " + generatePropertyName(property) + ";");
+                cb.addLine("private " + GenerationUtils.generatePropertyType(property) + " " + GenerationUtils.generatePropertyName(property) + ";");
         }
 
         cb.addEmptyLine();
@@ -67,41 +67,12 @@ public class EntityGenerator extends GeneratorBase {
         }
     }
 
-    private String generatePropertyType(Property property) {
-        if (property.isEntityReference())
-            if (property.isIterable())
-                return "List<long>";
-            else
-                return "long";
-        else
-            if (property.isIterable())
-                return "List<" + property.getType() + ">";
-            else
-                return property.getType();
-    }
-
-    public static String generatePropertyName(Property property) {
-        String currentName = property.getName();
-
-        if (property.isEntityReference())
-            if (property.isIterable())
-                if (currentName.toLowerCase().endsWith(property.getType().toLowerCase() + "s"))
-                    return currentName.substring(0, currentName.length() - 1) + "Ids";
-                else
-                    return currentName + "Ids";
-            else {
-                return currentName + "Id";
-            }
-        else
-            return currentName;
-    }
-
     private void generateConstructor(Entity entity, CodeBuilder cb) {
         cb.addLine("public " + entity.getName() + "() {");
         cb.incrIndent();
 
         for (Property iterableProperty : entity.getProperties().stream().filter(p -> p.isIterable()).collect(Collectors.toList())) {
-            cb.addLine(generatePropertyName(iterableProperty) + " = new ArrayList<>();");
+            cb.addLine(GenerationUtils.generatePropertyName(iterableProperty) + " = new ArrayList<>();");
         }
 
         cb.decrIndent();
@@ -109,10 +80,10 @@ public class EntityGenerator extends GeneratorBase {
     }
 
     private void generateGetter(Property property, CodeBuilder cb) {
-        String generatedPropertyName = generatePropertyName(property);
+        String generatedPropertyName = GenerationUtils.generatePropertyName(property);
         String formattedPropertyName = StringUtils.ensureStartUpper(generatedPropertyName);
 
-        cb.addLine("public " + generatePropertyType(property) + " get" + formattedPropertyName + "() {");
+        cb.addLine("public " + GenerationUtils.generatePropertyType(property) + " get" + formattedPropertyName + "() {");
         cb.incrIndent();
         cb.addLine("return " + generatedPropertyName + ";");
         cb.decrIndent();
@@ -120,10 +91,10 @@ public class EntityGenerator extends GeneratorBase {
     }
 
     private void generateSetter(Property property, CodeBuilder cb) {
-        String generatedPropertyName = generatePropertyName(property);
+        String generatedPropertyName = GenerationUtils.generatePropertyName(property);
         String formattedPropertyName = StringUtils.ensureStartUpper(generatedPropertyName);
 
-        cb.addLine("public void set" + formattedPropertyName + "(" + generatePropertyType(property) + " " + generatedPropertyName + ") {");
+        cb.addLine("public void set" + formattedPropertyName + "(" + GenerationUtils.generatePropertyType(property) + " " + generatedPropertyName + ") {");
         cb.incrIndent();
         cb.addLine("this." + generatedPropertyName + " = " + generatedPropertyName + ";");
         cb.decrIndent();
